@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { Composer } from "@/components/Composer";
 import { AIPanel } from "@/components/AIPanel";
+import { Instructions } from "@/components/Instructions";
 
 export default function ComposePage() {
   const [aiResult, setAIResult] = useState<Record<string, unknown> | null>(
@@ -77,6 +78,11 @@ export default function ComposePage() {
           </a>
         </nav>
       </header>
+
+      {/* Instructions */}
+      <div className="max-w-7xl mx-auto px-6 pt-4">
+        <Instructions />
+      </div>
 
       {/* Main layout: Composer + AI Panel */}
       <div className="flex flex-col lg:flex-row max-w-7xl mx-auto">
