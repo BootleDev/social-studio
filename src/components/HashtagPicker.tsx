@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { ROTATION_SETS, BRANDED_TAGS, type HashtagSet } from "@/lib/hashtags";
+import {
+  ROTATION_SETS,
+  BRANDED_TAGS,
+  getSeasonalContext,
+  type HashtagSet,
+} from "@/lib/hashtags";
 
 interface HashtagPickerProps {
   hashtags: string[];
@@ -16,6 +21,7 @@ export function HashtagPicker({
 }: HashtagPickerProps) {
   const [newTag, setNewTag] = useState("");
   const [showSets, setShowSets] = useState(false);
+  const seasonalContext = getSeasonalContext();
 
   const addTag = (tag: string) => {
     const normalised = tag.startsWith("#") ? tag : `#${tag}`;
@@ -37,8 +43,9 @@ export function HashtagPicker({
   };
 
   const applySet = (setKey: HashtagSet) => {
-    const set = ROTATION_SETS[setKey];
-    const tags = [...BRANDED_TAGS, ...set.tags].slice(0, 12);
+    const resolvedTags =
+      setKey === "F" ? seasonalContext.tags : ROTATION_SETS[setKey].tags;
+    const tags = [...BRANDED_TAGS, ...resolvedTags].slice(0, 12);
     onChange(tags);
     setShowSets(false);
   };
@@ -58,7 +65,10 @@ export function HashtagPicker({
                 color: "#fff",
               }}
             >
-              Set {currentSet}: {ROTATION_SETS[currentSet].pillar}
+              Set {currentSet}:{" "}
+              {currentSet === "F"
+                ? seasonalContext.label
+                : ROTATION_SETS[currentSet].pillar}
             </span>
           )}
           <button
@@ -100,7 +110,9 @@ export function HashtagPicker({
                   color: currentSet === key ? "#ddd" : "var(--text-secondary)",
                 }}
               >
-                {ROTATION_SETS[key].pillar}
+                {key === "F"
+                  ? `${seasonalContext.label}${seasonalContext.isCampaign ? " ✦" : ""}`
+                  : ROTATION_SETS[key].pillar}
               </span>
             </button>
           ))}
