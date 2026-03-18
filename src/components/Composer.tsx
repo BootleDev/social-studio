@@ -92,7 +92,7 @@ export function Composer({ onAIGenerate, aiResult, aiLoading }: ComposerProps) {
           <button
             key={type}
             onClick={() => setPostType(type)}
-            className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+            className="px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer"
             style={{
               background:
                 postType === type ? "var(--accent-blue)" : "var(--bg-card)",
@@ -191,7 +191,7 @@ export function Composer({ onAIGenerate, aiResult, aiLoading }: ComposerProps) {
       <button
         onClick={handleAIEnhance}
         disabled={aiLoading}
-        className="w-full py-3 rounded-lg text-sm font-medium transition-opacity"
+        className="w-full py-3 rounded-lg text-sm font-medium transition-opacity disabled:cursor-not-allowed cursor-pointer"
         style={{
           background: "var(--accent-purple)",
           color: "#fff",
@@ -211,7 +211,7 @@ export function Composer({ onAIGenerate, aiResult, aiLoading }: ComposerProps) {
       {/* Preview Toggle */}
       <button
         onClick={() => setShowPreview(!showPreview)}
-        className="text-sm underline"
+        className="text-sm underline cursor-pointer"
         style={{ color: "var(--accent-blue)" }}
       >
         {showPreview ? "Hide Preview" : "Show Preview"}

@@ -154,7 +154,7 @@ export function MediaUploader({
               )}
               <button
                 onClick={() => onRemove(i)}
-                className="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                 style={{
                   background: "var(--accent-red)",
                   color: "#fff",

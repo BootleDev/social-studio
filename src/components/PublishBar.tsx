@@ -171,7 +171,7 @@ export function PublishBar({
           disabled={
             !canPublish || state === "publishing" || state === "polling"
           }
-          className="px-6 py-2.5 rounded-lg text-sm font-medium transition-opacity"
+          className="px-6 py-2.5 rounded-lg text-sm font-medium transition-opacity disabled:cursor-not-allowed cursor-pointer"
           style={{
             background:
               canPublish && state !== "publishing" && state !== "polling"

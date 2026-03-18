@@ -63,7 +63,7 @@ export function HashtagPicker({
           )}
           <button
             onClick={() => setShowSets(!showSets)}
-            className="text-xs underline"
+            className="text-xs underline cursor-pointer"
             style={{ color: "var(--accent-blue)" }}
           >
             {showSets ? "Hide sets" : "Use a set"}
@@ -84,16 +84,22 @@ export function HashtagPicker({
             <button
               key={key}
               onClick={() => applySet(key)}
-              className="text-left p-2 rounded text-xs transition-colors hover:opacity-80"
+              className="text-left p-2 rounded text-xs transition-colors hover:opacity-80 cursor-pointer"
               style={{
                 background:
-                  currentSet === key ? "var(--accent-blue)" : "var(--bg-secondary)",
+                  currentSet === key
+                    ? "var(--accent-blue)"
+                    : "var(--bg-secondary)",
                 color: currentSet === key ? "#fff" : "var(--text-primary)",
               }}
             >
               <span className="font-medium">Set {key}</span>
               <br />
-              <span style={{ color: currentSet === key ? "#ddd" : "var(--text-secondary)" }}>
+              <span
+                style={{
+                  color: currentSet === key ? "#ddd" : "var(--text-secondary)",
+                }}
+              >
                 {ROTATION_SETS[key].pillar}
               </span>
             </button>
@@ -108,10 +114,12 @@ export function HashtagPicker({
             key={tag}
             className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs"
             style={{
-              background: BRANDED_TAGS.includes(tag as typeof BRANDED_TAGS[number])
+              background: BRANDED_TAGS.includes(
+                tag as (typeof BRANDED_TAGS)[number],
+              )
                 ? "var(--accent-blue)"
                 : "var(--bg-card)",
-              color: BRANDED_TAGS.includes(tag as typeof BRANDED_TAGS[number])
+              color: BRANDED_TAGS.includes(tag as (typeof BRANDED_TAGS)[number])
                 ? "#fff"
                 : "var(--text-primary)",
               border: "1px solid var(--border)",
@@ -120,7 +128,7 @@ export function HashtagPicker({
             {tag}
             <button
               onClick={() => removeTag(tag)}
-              className="ml-0.5 hover:opacity-70"
+              className="ml-0.5 hover:opacity-70 cursor-pointer"
             >
               x
             </button>

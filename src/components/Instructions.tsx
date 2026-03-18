@@ -94,7 +94,7 @@ export function Instructions() {
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium"
+        className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium cursor-pointer"
         style={{ color: "var(--text-primary)" }}
       >
         <span>How to use Social Studio</span>
@@ -114,10 +114,8 @@ export function Instructions() {
           {sections.map((section, i) => (
             <div key={i}>
               <button
-                onClick={() =>
-                  setOpenSection(openSection === i ? null : i)
-                }
-                className="w-full flex items-center justify-between py-2 text-sm text-left"
+                onClick={() => setOpenSection(openSection === i ? null : i)}
+                className="w-full flex items-center justify-between py-2 text-sm text-left cursor-pointer"
                 style={{
                   color:
                     openSection === i
@@ -126,9 +124,7 @@ export function Instructions() {
                 }}
               >
                 <span>{section.title}</span>
-                <span className="text-xs">
-                  {openSection === i ? "-" : "+"}
-                </span>
+                <span className="text-xs">{openSection === i ? "-" : "+"}</span>
               </button>
 
               {openSection === i && (
