@@ -71,7 +71,8 @@ export const ROTATION_SETS: Record<
       "#surgicalsteel",
       "#naturalmaterials",
     ],
-    useFor: "Materials close-ups, sustainability messaging, zero-plastic content",
+    useFor:
+      "Materials close-ups, sustainability messaging, zero-plastic content",
   },
   D: {
     pillar: "Community & Culture",
@@ -109,7 +110,8 @@ export const ROTATION_SETS: Record<
   F: {
     pillar: "Seasonal",
     tags: [],
-    useFor: "Auto-resolves to the active season or campaign based on today's date",
+    useFor:
+      "Auto-resolves to the active season or campaign based on today's date",
   },
 };
 
@@ -153,7 +155,8 @@ const BASE_SEASONS: Record<
       "#summeroutdoors",
       "#drinkmore",
     ],
-    useFor: "Outdoor adventures, active summer lifestyle, heat/hydration messaging",
+    useFor:
+      "Outdoor adventures, active summer lifestyle, heat/hydration messaging",
   },
   autumn: {
     label: "Autumn",
@@ -169,7 +172,8 @@ const BASE_SEASONS: Record<
       "#slowliving",
       "#warmdrinks",
     ],
-    useFor: "Cosy content, Brew Inner, warm drink recipes, slow-living messaging",
+    useFor:
+      "Cosy content, Brew Inner, warm drink recipes, slow-living messaging",
   },
   winter: {
     label: "Winter",
@@ -240,6 +244,25 @@ const CAMPAIGNS: CampaignWindow[] = [
       "#giftguide",
     ],
     useFor: "Gift messaging, couples content, self-love, gifting campaigns",
+  },
+  {
+    label: "St. Patrick's Day",
+    start: [3, 14],
+    end: [3, 17],
+    tags: [
+      "#stpatricksday",
+      "#marchvibes",
+      "#greenliving",
+      "#sustainablegreen",
+      "#luckyday",
+      "#springcelebration",
+      "#drinkgreen",
+      "#outdoorlife",
+      "#springgreen",
+      "#marchgreen",
+    ],
+    useFor:
+      "Green/spring tone, outdoors, social celebration — pair with spring or sustainability content",
   },
   {
     label: "Easter",
@@ -362,21 +385,25 @@ export function getSeasonalContext(date: Date = new Date()): SeasonalContext {
   const month = date.getMonth() + 1; // 1-indexed
   const day = date.getDate();
 
-  // Campaign takes priority — first match wins
+  const seasonKey = getBaseSeason(month);
+  const season = BASE_SEASONS[seasonKey];
+
+  // Campaign match — merge with base season (campaign tags first, season fills in)
   for (const campaign of CAMPAIGNS) {
     if (isInCampaignWindow(campaign, month, day)) {
+      const merged = [
+        ...campaign.tags,
+        ...season.tags.filter((t) => !campaign.tags.includes(t)),
+      ];
       return {
         label: campaign.label,
-        tags: campaign.tags,
+        tags: merged,
         useFor: campaign.useFor,
         isCampaign: true,
       };
     }
   }
 
-  // Fall back to base season
-  const seasonKey = getBaseSeason(month);
-  const season = BASE_SEASONS[seasonKey];
   return {
     label: season.label,
     tags: season.tags,
