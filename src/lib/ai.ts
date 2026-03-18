@@ -97,14 +97,15 @@ Allbirds' warmth (15%): Conversational, second-person. Like a smart friend, not 
 - Lists of three: use three parallel short phrases. "Infuse with fruit. Brew loose-leaf. Shake protein."
 
 ## MATERIAL VOCABULARY
-| Use this | Never say |
-|---|---|
-| Surgical steel | Marine-grade steel, just "stainless" |
-| Natural rubber | Silicone, silicone rubber |
-| Glass, lab-grade glass | Borosilicate type 3.1 |
-| Inners | Accessories, attachments |
-| Sets (Bootle + 3 Inners) | Kits |
-| Shake, Brew, Infuse (capitalised) | Shaker, tea strainer, infuser, filter |
+| Use this | Also acceptable (technical context) | Never say |
+|---|---|---|
+| Surgical steel | 316L, stainless steel | Marine-grade steel |
+| Natural rubber | (none) | Silicone, silicone rubber |
+| Glass, lab-grade glass | Borosilicate glass | Borosilicate type 3.1 |
+| Inners | Interchangeable inserts (when explaining to newcomers) | Accessories, attachments |
+| Sets (Bootle + 3 Inners) | (none) | Kits |
+| Bundles (Bootle + extra parts beyond 3 Inners) | (none) | Sets (when it includes extras) |
+| Shake, Brew, Infuse (capitalised) | (none) | Shaker, tea strainer, infuser, filter |
 
 ## CLAIMS RULES
 | Do say | Don't say |
@@ -157,7 +158,7 @@ ${input.lastUsedSet ? `Last used set: ${input.lastUsedSet}. Do NOT use the same 
 - No emoji walls. 0-2 emoji max.
 - No "giveaway" language unless it's an actual giveaway.
 - No aggressive sales language.
-- No hashtag soup. Intentional, relevant hashtags only.
+- No hashtag soup. Use only the count specified in the Platform Rules section above.
 
 ## AI-TELL DETECTION (the Bootle-only test)
 Before returning, check your caption against every item:
@@ -183,7 +184,9 @@ Post type: ${input.postType}
 
 Generate and return VALID JSON only (no markdown, no backticks, no preamble):
 {
-  ${input.platforms.instagram ? `"instagram": {
+  ${
+    input.platforms.instagram
+      ? `"instagram": {
     "caption": "the full caption text (without hashtags)",
     "hashtags": ["#bootle", "#bootleofficial", ...remaining tags from the chosen set],
     "hashtagSet": "A|B|C|D|E|F",
@@ -191,10 +194,16 @@ Generate and return VALID JSON only (no markdown, no backticks, no preamble):
     "aiTells": ["list of any detected AI tells, empty if score is 10"],
     "pillar": "which content pillar this hits",
     "altHook": "one alternative hook line if the current one feels weak"
-  }` : ""}${input.platforms.instagram && input.platforms.facebook ? "," : ""}
-  ${input.platforms.facebook ? `"facebook": {
+  }`
+      : ""
+  }${input.platforms.instagram && input.platforms.facebook ? "," : ""}
+  ${
+    input.platforms.facebook
+      ? `"facebook": {
     "caption": "adapted caption for Facebook (no hashtags in body, simpler)"
-  }` : ""}
+  }`
+      : ""
+  }
 }`;
 }
 

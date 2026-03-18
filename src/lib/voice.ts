@@ -35,6 +35,7 @@ export const BANNED_PHRASES = [
   "buy now",
   "limited time",
   "don't miss out",
+  "endless",
 ] as const;
 
 export const AI_TELL_CHECKLIST = [
@@ -62,8 +63,7 @@ export const CONTENT_PILLARS = {
     "UGC, customer stories, Scandinavian design, behind-the-scenes",
   "Lifestyle & Wellness":
     "Gym content, yoga/fitness, daily routine, morning rituals, on-the-go",
-  Seasonal:
-    "Seasonal hooks, trend-jacking, timely content (update monthly)",
+  Seasonal: "Seasonal hooks, trend-jacking, timely content (update monthly)",
 } as const;
 
 export const EMOTIONAL_PILLARS = [

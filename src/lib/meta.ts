@@ -105,19 +105,11 @@ let _pageAccessToken: string | null = null;
 async function getPageAccessToken(): Promise<string> {
   if (_pageAccessToken) return _pageAccessToken;
 
-  const { token, pageId } = getConfig();
-  const res = await fetch(
-    `${META_BASE}/me/accounts?access_token=${encodeURIComponent(token)}`,
-  );
-
-  if (!res.ok) {
-    const err = await res.text();
-    throw parseMetaError(res.status, err);
-  }
-
-  const data = await res.json();
-  const pages = data.data as Array<{ id: string; access_token: string }>;
-  const page = pages?.find((p) => p.id === pageId);
+  const { pageId } = getConfig();
+  const data = await metaGet("/me/accounts");
+  const pages =
+    (data.data as Array<{ id: string; access_token: string }>) ?? [];
+  const page = pages.find((p) => p.id === pageId);
 
   if (!page?.access_token) {
     throw new Error(
@@ -322,7 +314,9 @@ async function pollContainerUntilReady(
       return status;
     }
     if (status === "ERROR") {
-      throw new Error(`Container processing failed: ${errorMessage ?? "unknown error"}`);
+      throw new Error(
+        `Container processing failed: ${errorMessage ?? "unknown error"}`,
+      );
     }
     if (status === "EXPIRED") {
       throw new Error("Container expired. Please re-upload and try again.");
@@ -437,10 +431,7 @@ export async function startInstagramPublish(
     }
 
     // Single image
-    const { containerId } = await createIGImageContainer(
-      mediaUrls[0],
-      caption,
-    );
+    const { containerId } = await createIGImageContainer(mediaUrls[0], caption);
     // Images are usually immediate, but poll to be safe
     await pollContainerUntilReady(containerId, 10, 1000);
     const { mediaId } = await publishIGContainer(containerId);

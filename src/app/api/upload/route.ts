@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
+import { requireAuth } from "@/lib/requireAuth";
 
 /**
  * Handles Vercel Blob client-side upload token handshake.
@@ -7,6 +8,9 @@ import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
  * only generates signed tokens, never receives file bytes.
  */
 export async function POST(request: Request) {
+  const authError = await requireAuth();
+  if (authError) return authError;
+
   const body = (await request.json()) as HandleUploadBody;
 
   try {
