@@ -12,7 +12,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' blob: data: https://*.public.blob.vercel-storage.com",
       "media-src 'self' blob: https://*.public.blob.vercel-storage.com",
-      "connect-src 'self' https://*.public.blob.vercel-storage.com",
+      "connect-src 'self' https://*.blob.vercel-storage.com https://*.public.blob.vercel-storage.com",
       "frame-ancestors 'none'",
     ].join("; "),
   },
