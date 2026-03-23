@@ -6,11 +6,12 @@ import { requireAuth } from "@/lib/requireAuth";
  * Handles Vercel Blob client-side upload token handshake.
  * The browser uploads directly to Blob storage — this route
  * only generates signed tokens, never receives file bytes.
+ *
+ * Auth is checked inside onBeforeGenerateToken (not at the top)
+ * because the upload-completed callback comes from Vercel's servers
+ * with no auth cookie — blocking it causes the client upload to hang.
  */
 export async function POST(request: Request) {
-  const authError = await requireAuth();
-  if (authError) return authError;
-
   const body = (await request.json()) as HandleUploadBody;
 
   try {
@@ -18,6 +19,11 @@ export async function POST(request: Request) {
       body,
       request,
       onBeforeGenerateToken: async (pathname) => {
+        // Auth check here — only runs for token requests from the browser,
+        // not for the completion callback from Vercel's infrastructure
+        const authError = await requireAuth();
+        if (authError) throw new Error("Unauthorized");
+
         // Validate file type
         const ext = pathname.split(".").pop()?.toLowerCase();
         const allowed = ["jpg", "jpeg", "png", "mp4", "mov"];
