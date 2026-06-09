@@ -3,6 +3,11 @@
  * Pattern from social-dashboard/src/lib/airtable.ts
  */
 
+import {
+  hasSupabaseDbUrl,
+  getLatestTrendReportFromSupabase,
+} from "./supabase";
+
 const BASE_URL = "https://api.airtable.com/v0";
 
 export const TABLES = {
@@ -86,13 +91,51 @@ async function fetchRecords(
   return allRecords;
 }
 
-/** Get the latest trend report. */
-export async function getLatestTrendReport() {
+/**
+ * Get the latest trend report directly from Airtable. This is the original,
+ * unchanged read path, kept as the fail-closed fallback for the Supabase path.
+ */
+async function getLatestTrendReportFromAirtable() {
   const records = await fetchRecords(TABLES.TREND_REPORTS, {
     sort: [{ field: "Report Date", direction: "desc" }],
     maxRecords: 1,
   });
   return records[0]?.fields ?? null;
+}
+
+/**
+ * Get the latest trend report (WEBDEV-207 read-repoint).
+ *
+ * When SUPABASE_DB_URL is configured, read from Supabase
+ * (social.trend_reports) and fall back to Airtable on ANY error OR an empty
+ * result, so a Supabase outage can never throw or 500 the AI route. The
+ * Supabase path returns the SAME shape and byte-identical "Full Report" as the
+ * Airtable path. Without SUPABASE_DB_URL, behaviour is unchanged (Airtable).
+ *
+ * Override with TREND_REPORT_SOURCE=airtable to force the Airtable path even
+ * when SUPABASE_DB_URL is present (kill switch).
+ */
+export async function getLatestTrendReport() {
+  const forceAirtable =
+    process.env.TREND_REPORT_SOURCE?.toLowerCase() === "airtable";
+
+  if (!forceAirtable && hasSupabaseDbUrl()) {
+    try {
+      const fromSupabase = await getLatestTrendReportFromSupabase();
+      if (fromSupabase) return fromSupabase;
+      // Empty result -> fall through to Airtable rather than returning null.
+      console.warn(
+        "[trend-report] Supabase returned no rows; falling back to Airtable",
+      );
+    } catch (err) {
+      console.error(
+        "[trend-report] Supabase read failed; falling back to Airtable:",
+        err instanceof Error ? err.message : err,
+      );
+    }
+  }
+
+  return getLatestTrendReportFromAirtable();
 }
 
 /** Get recent Bootle posts with metrics. */
