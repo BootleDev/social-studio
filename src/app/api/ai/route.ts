@@ -4,6 +4,10 @@ import { getIntelligenceContext } from "@/lib/airtable";
 import { requireAuth } from "@/lib/requireAuth";
 import type { HashtagSet } from "@/lib/hashtags";
 
+// Pin the Node.js runtime: getIntelligenceContext() -> Supabase uses node-pg,
+// which cannot run on the Edge runtime.
+export const runtime = "nodejs";
+
 const VALID_POST_TYPES = ["image", "carousel", "reel"];
 const VALID_SETS: HashtagSet[] = ["A", "B", "C", "D", "E", "F"];
 const MAX_INPUT_LENGTH = 5000;

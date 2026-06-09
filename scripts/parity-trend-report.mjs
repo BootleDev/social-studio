@@ -17,6 +17,19 @@
  *     node scripts/parity-trend-report.mjs
  */
 import pg from "pg";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+
+// Pin the same Supabase Root 2021 CA the app uses (src/lib/supabase-ca.ts), so
+// the parity proof exercises the hardened TLS path (rejectUnauthorized: true).
+const SUPABASE_CA = (() => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const src = readFileSync(join(here, "..", "src", "lib", "supabase-ca.ts"), "utf8");
+  const m = src.match(/-----BEGIN CERTIFICATE-----[\s\S]*?-----END CERTIFICATE-----/);
+  if (!m) throw new Error("could not extract CA PEM from src/lib/supabase-ca.ts");
+  return m[0] + "\n";
+})();
 
 const SUPABASE_DB_URL = process.env.SUPABASE_DB_URL;
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
@@ -51,7 +64,7 @@ function parseDbUrl(url) {
 async function fromSupabase() {
   const pool = new pg.Pool({
     ...parseDbUrl(SUPABASE_DB_URL),
-    ssl: { rejectUnauthorized: false },
+    ssl: { ca: SUPABASE_CA, rejectUnauthorized: true },
     max: 1,
   });
   try {
