@@ -49,6 +49,10 @@ describe("mapTrendReportRow", () => {
         "Videos Analysed",
       ].sort(),
     );
+    // Tie the output size to the guard list: a column added to
+    // EXPECTED_COLUMNS but not to the mapper's return object would otherwise
+    // pass the guard and be silently dropped from the AI prompt.
+    expect(Object.keys(out)).toHaveLength(EXPECTED_COLUMNS.length);
   });
 
   it("passes every value through VERBATIM (no reformatting, no scaling)", () => {
