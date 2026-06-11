@@ -7,6 +7,7 @@ import {
   hasSupabaseDbUrl,
   getLatestTrendReportFromSupabase,
 } from "./supabase";
+import { forcedToAirtable } from "./sourceSwitch";
 
 const BASE_URL = "https://api.airtable.com/v0";
 
@@ -116,8 +117,10 @@ async function getLatestTrendReportFromAirtable() {
  * when SUPABASE_DB_URL is present (kill switch).
  */
 export async function getLatestTrendReport() {
-  const forceAirtable =
-    process.env.TREND_REPORT_SOURCE?.toLowerCase() === "airtable";
+  const forceAirtable = forcedToAirtable(
+    process.env.TREND_REPORT_SOURCE,
+    "TREND_REPORT_SOURCE",
+  );
 
   if (!forceAirtable && hasSupabaseDbUrl()) {
     try {

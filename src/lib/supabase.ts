@@ -33,6 +33,7 @@
 import "server-only";
 import pg from "pg";
 import { SUPABASE_ROOT_CA_2021 } from "./supabase-ca";
+import { mapTrendReportRow } from "./supabaseMappers";
 
 // int8 (OID 20): return as a JS number, not a string. Defensive/inert for
 // social.trend_reports — videos_analysed is int4 (OID 23), which pg already
@@ -123,17 +124,13 @@ export function hasSupabaseDbUrl(): boolean {
   return Boolean(DB_URL);
 }
 
-// The columns the Supabase mapping depends on. If any is ABSENT from the row
-// (a rename/drop), we throw so getLatestTrendReport()'s catch engages Airtable
-// rather than silently feeding the LLM a prompt with missing fields.
-const EXPECTED_COLUMNS = [
-  "report_date",
-  "full_report",
-  "hook_breakdown",
-  "platform_breakdown",
-  "period",
-  "videos_analysed",
-] as const;
+// The pure row -> envelope mapper (and the expected-column guard) lives in
+// ./supabaseMappers so it can be unit-tested without this server-only / pg
+// connection layer (WEBDEV-215, mirroring the other two dashboards). The
+// emitted key set and verbatim passthrough are pinned by
+// supabaseMappers.test.ts, which runs on every PR/push
+// (.github/workflows/ci.yml) and gates every Vercel deploy (vercel.json
+// buildCommand).
 
 /**
  * Latest trend report from Supabase `social.trend_reports`, returned in the
@@ -175,27 +172,7 @@ export async function getLatestTrendReportFromSupabase(): Promise<Record<
     const r = rows[0];
     if (!r) return null;
 
-    // Schema-rename guard: a renamed/dropped column comes back ABSENT from the
-    // row object, whereas a genuine SQL NULL comes back as a present `null`
-    // key. Use `in` (not === undefined) to tell them apart and throw on absence
-    // so the Airtable fallback engages instead of a degraded prompt.
-    for (const col of EXPECTED_COLUMNS) {
-      if (!(col in r)) {
-        throw new Error(
-          `social.trend_reports is missing expected column "${col}" ` +
-            "(schema drift?); failing over to Airtable",
-        );
-      }
-    }
-
-    return {
-      "Report Date": r.report_date,
-      "Full Report": r.full_report,
-      "Hook Breakdown": r.hook_breakdown,
-      "Platform Breakdown": r.platform_breakdown,
-      Period: r.period,
-      "Videos Analysed": r.videos_analysed,
-    };
+    return mapTrendReportRow(r);
   })();
 
   try {
